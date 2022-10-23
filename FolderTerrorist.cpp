@@ -70,7 +70,6 @@ void FolderTerrorist::_updateQueue() {
             }
         }
     }
-
 }
 
 void FolderTerrorist::_releaseQueue() {
@@ -87,7 +86,6 @@ void FolderTerrorist::_releaseQueue() {
         }
         sleep(2);
     }
-
 }
 
 void FolderTerrorist::_fileTerror(const std::string &filename) {
@@ -115,6 +113,18 @@ FolderTerrorist::~FolderTerrorist() {
 }
 
 void FolderTerrorist::start(const char* path) {
+    using namespace std;
+    _folder_name = std::string(path);
+    namespace fs = std::filesystem;
+    if (!fs::exists(fs::path(getFolderName()))) {
+        throw std::runtime_error("Path " + getFolderName() + " not exist\n");
+    }
+    //////////////
+    _threads.push_back(std::thread(&FolderTerrorist::_updateQueue, this));
+    _threads.push_back(std::thread(&FolderTerrorist::_releaseQueue, this));
+    std::cout << "Folder terrorist is in " << getFolderName();
+    for (auto &t : _threads)
+        t.join();
     ///TODO
 }
 
