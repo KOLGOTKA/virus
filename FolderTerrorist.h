@@ -27,6 +27,10 @@ private:
    FolderTerrorist();
    bool _isStopped = false;
 
+   static void _signalHandler(int signum) {
+       std::cout << "Programm catch " << signum << " signal\n";
+       FolderTerrorist::instance()->stop();
+   };
 public:
     void stop();
     void start(std::string path);

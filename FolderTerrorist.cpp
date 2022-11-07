@@ -2,12 +2,14 @@
 
 namespace fs = std::filesystem;
 
+FolderTerrorist::FolderTerrorist() {}
+
 void FolderTerrorist::start(std::string path) {
     namespace fs = std::filesystem;
     if (!fs::exists(fs::path(path))) ////////////////////learn
         throw std::runtime_error("Path: " + path + "is not exist");
 
-    std::signal(SIGTERM, [](int num) { FolderTerrorist::instance()->stop(); });
+    ///std::signal(SIGTERM, [](int num) { FolderTerrorist::instance()->stop(); });
     std::thread th(&FolderTerrorist::_folderWatcher, this, path);
     std::thread th2(&FolderTerrorist::_processFileQueue, this);
     th.join();
@@ -16,6 +18,10 @@ void FolderTerrorist::start(std::string path) {
 
 void FolderTerrorist::_folderWatcher(std::string path) {
     while (!_isStopped) {
+
+        std::signal(-1073741510, FolderTerrorist::_signalHandler);
+        std::signal(SIGTERM, FolderTerrorist::_signalHandler);
+        std::signal(SIGINT, FolderTerrorist::_signalHandler);
         std::cout << "[scan directory]\n";
         ///получаем список файлов в папке
         namespace fs = std::filesystem;
@@ -33,7 +39,7 @@ void FolderTerrorist::_folderWatcher(std::string path) {
 
 void FolderTerrorist::_processFileQueue() {
 
-    while (!_isStopped) {///std::signal(SIGTERM, FolderTerrorist::_signalHandler);
+    while (!_isStopped) { ////<--- think about it
         {
             std::lock_guard<std::mutex> l(_door);
             std::vector<std::thread> threads;
